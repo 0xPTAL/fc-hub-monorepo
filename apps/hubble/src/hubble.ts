@@ -96,6 +96,27 @@ import { DEFAULT_CATCHUP_SYNC_SNAPSHOT_MESSAGE_LIMIT } from "./defaultConfig.js"
 import { diagnosticReporter } from "./utils/diagnosticReport.js";
 import { startupCheck, StartupCheckStatus } from "./utils/startupCheck.js";
 
+import {defineChain} from 'viem';
+
+ultimateChain = defineChain({
+  id: 24959,
+  name: 'ultimate',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'TEST',
+    symbol: 'TEST',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Explorer', url: 'hhttps://explorer.zora.energyttps://explorer.zora.energy' },
+  },
+});
+
+
 export type HubSubmitSource = "gossip" | "rpc" | "eth-provider" | "l2-provider" | "sync" | "fname-registry";
 
 export const APP_VERSION = packageJson.version;
@@ -428,7 +449,7 @@ export class Hub implements HubInterface {
     const opMainnetRpcUrls = options.l2RpcUrl.split(",");
     const opTransports = opMainnetRpcUrls.map((url) => http(url, { retryCount: 3, retryDelay: 500 }));
     const opClient = createPublicClient({
-      chain: optimism,
+      chain: ultimateChain,
       transport: fallback(opTransports, { rank: options.rankRpcs ?? false }),
     });
 
