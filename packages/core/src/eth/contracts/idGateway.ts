@@ -16,7 +16,7 @@ export type IdGatewayRegisterMessage = {
   deadline: bigint;
 };
 
-export const ID_GATEWAY_ADDRESS = "0x00000000Fc25870C6eD6b6c7E41Fb078b7656f69" as const;
+export const ID_GATEWAY_ADDRESS = "0xdae38e1d108405c7a6ce39f36042c9079abcb0eb" as const;
 
 export const ID_GATEWAY_EIP_712_DOMAIN = {
   name: "Farcaster IdGateway",

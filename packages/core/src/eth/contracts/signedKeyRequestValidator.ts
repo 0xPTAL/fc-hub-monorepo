@@ -13,7 +13,7 @@ export type SignedKeyRequestMessage = {
   deadline: bigint;
 };
 
-export const SIGNED_KEY_REQUEST_VALIDATOR_ADDRESS = "0x00000000FC700472606ED4fA22623Acf62c60553" as const;
+export const SIGNED_KEY_REQUEST_VALIDATOR_ADDRESS = "0x7c3606d3413846f1acb3c0eae209d56ffff0eb3f" as const;
 
 export const SIGNED_KEY_REQUEST_VALIDATOR_EIP_712_DOMAIN = {
   name: "Farcaster SignedKeyRequestValidator",
