@@ -10,10 +10,13 @@ export default defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['https://rpc-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/'],
+      http: ['https://rpc-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz'],
+    },
+    public: {
+      http: ['https://rpc-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz'],
     },
   },
   blockExplorers: {
-    default: { name: 'Explorer', url: 'https://explorerl2new-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/' },
+    default: { name: 'Explorer', url: 'https://explorerl2new-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz' },
   },
 });
