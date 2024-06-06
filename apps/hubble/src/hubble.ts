@@ -112,7 +112,7 @@ ultimateChain = defineChain({
     },
   },
   blockExplorers: {
-    default: { name: 'Explorer', url: 'hhttps://explorer.zora.energyttps://explorer.zora.energy' },
+    default: { name: 'Explorer', url: 'https://explorerl2new-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/' },
   },
 });
 
