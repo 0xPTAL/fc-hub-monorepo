@@ -4,7 +4,7 @@
 # Simply run the following command to install the latest version of hubble:
 # curl <file location> | bash
 
-REPO="farcasterxyz/hub-monorepo"
+REPO="0xPTAL/hub-monorepo"
 RAWFILE_BASE="https://raw.githubusercontent.com/$REPO"
 LATEST_TAG="@latest"
 SCRIPT_FILE_PATH="scripts/hubble.sh"

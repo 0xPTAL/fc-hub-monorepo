@@ -15,6 +15,6 @@ echo "Publishing $REPLICATOR_VERSION"
 depot build -f Dockerfile.replicator \
   --platform "linux/amd64,linux/arm64" \
   --push \
-  -t farcasterxyz/replicator:${REPLICATOR_VERSION} \
-  -t farcasterxyz/replicator:latest \
+  -t 0xPTAL/replicator:${REPLICATOR_VERSION} \
+  -t 0xPTAL/replicator:latest \
   .
