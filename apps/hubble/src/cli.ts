@@ -30,7 +30,7 @@ import { profileGossipServer } from "./profile/gossipProfile.js";
 import { getStatsdInitialization, initializeStatsd } from "./utils/statsd.js";
 import os from "os";
 import { startupCheck, StartupCheckStatus } from "./utils/startupCheck.js";
-import { mainnet, optimism } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { finishAllProgressBars } from "./utils/progressBars.js";
 import { MAINNET_BOOTSTRAP_PEERS } from "./bootstrapPeers.mainnet.js";
 import axios from "axios";
@@ -608,7 +608,7 @@ app
       );
     }
 
-    await startupCheck.rpcCheck(options.ethMainnetRpcUrl, mainnet, "L1");
+    await startupCheck.rpcCheck(options.ethMainnetRpcUrl, sepolia, "L1");
 
     if (startupCheck.anyFailedChecks()) {
       logger.fatal({ reason: "Startup checks failed" }, "shutting down hub");
