@@ -2,7 +2,8 @@ import { defineChain } from 'viem';
 
 export default defineChain({
   id: 24959,
-  name: 'ultimate',
+  network: 'ultimate',
+  name: 'Ultimate',
   nativeCurrency: {
     decimals: 18,
     name: 'TEST',
