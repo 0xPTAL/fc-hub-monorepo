@@ -50,7 +50,7 @@ export type IdRegistryChangeRecoveryAddressMessage = {
   deadline: bigint;
 };
 
-export const ID_REGISTRY_ADDRESS = "0x00000000Fc6c5F01Fc30151999387Bb99A9f489b" as const;
+export const ID_REGISTRY_ADDRESS = "0xd6b3cae1cd2bc5d05d8050961bc74baf378ce004" as const;
 
 export const ID_REGISTRY_EIP_712_DOMAIN = {
   name: "Farcaster IdRegistry",

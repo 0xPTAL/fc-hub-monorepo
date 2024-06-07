@@ -25,7 +25,7 @@ export type KeyGatewayAddMessage = {
   deadline: bigint;
 };
 
-export const KEY_GATEWAY_ADDRESS = "0x00000000fC56947c7E7183f8Ca4B62398CaAdf0B" as const;
+export const KEY_GATEWAY_ADDRESS = "0x71c0174b4d0684b5524954a4e2363aef5be55570" as const;
 
 export const KEY_GATEWAY_EIP_712_DOMAIN = {
   name: "Farcaster KeyGateway",

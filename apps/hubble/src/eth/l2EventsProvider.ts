@@ -18,7 +18,7 @@ import { err, ok, Result, ResultAsync } from "neverthrow";
 import { IdRegistry, KeyRegistry, StorageRegistry } from "./abis.js";
 import { HubInterface } from "../hubble.js";
 import { logger } from "../utils/logger.js";
-import { optimismGoerli } from "viem/chains";
+import ultimateChain from '../ultimateChain.js';
 import {
   createPublicClient,
   fallback,
@@ -44,9 +44,9 @@ const log = logger.child({
 });
 
 export class OptimismConstants {
-  public static StorageRegistryAddress = "0x00000000fcce7f938e7ae6d3c335bd6a1a7c593d" as const;
-  public static KeyRegistryV2Address = "0x00000000Fc1237824fb747aBDE0FF18990E59b7e" as const;
-  public static IdRegistryV2Address = "0x00000000Fc6c5F01Fc30151999387Bb99A9f489b" as const;
+  public static StorageRegistryAddress = "0x80dde16c4d0a163eff18876e8f025c70f24e1d9b" as const;
+  public static KeyRegistryV2Address = "0xdc0c552317fec0fa38d4cdf424de911e8ae118ae" as const;
+  public static IdRegistryV2Address = "0xd6b3cae1cd2bc5d05d8050961bc74baf378ce004" as const;
   public static FirstBlock = 108864739; // ~Aug 29 2023 5:00pm UTC
   public static ChunkSize = 1000;
   public static ChainId = 10; // OP mainnet
@@ -166,7 +166,7 @@ export class L2EventsProvider {
     );
 
     const publicClient = createPublicClient({
-      chain: optimismGoerli,
+      chain: ultimateChain,
       transport: fallback(transports, {
         rank: rankRpcs,
       }),
@@ -814,7 +814,7 @@ export class L2EventsProvider {
     });
     const transports = urls.map((url) => http(url, { retryCount: 1, timeout: 1000 }));
     const testClient = createPublicClient({
-      chain: optimismGoerli,
+      chain: ultimateChain,
       transport: fallback(transports),
     });
 

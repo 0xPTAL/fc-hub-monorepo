@@ -16,7 +16,7 @@ export type KeyRegistryRemoveMessage = {
   deadline: bigint;
 };
 
-export const KEY_REGISTRY_ADDRESS = "0x00000000fc1237824fb747abde0ff18990e59b7e" as const;
+export const KEY_REGISTRY_ADDRESS = "0xdc0c552317fec0fa38d4cdf424de911e8ae118ae" as const;
 
 export const KEY_REGISTRY_EIP_712_DOMAIN = {
   name: "Farcaster KeyRegistry",

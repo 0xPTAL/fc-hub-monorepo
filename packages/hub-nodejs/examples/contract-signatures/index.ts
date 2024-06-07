@@ -80,7 +80,7 @@ const BOB_PK = "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab36
   const deadline = getDeadline();
 
   /** Address of the Warpcast recovery proxy. */
-  const WARPCAST_RECOVERY_PROXY = "0x00000000FcB080a4D6c39a9354dA9EB9bC104cd7";
+  const WARPCAST_RECOVERY_PROXY = "0x13bd5651c3878e33e15cfccae5d821246366457b";
 
   /*******************************************************************************
    * IdGateway - register - Register an app FID.

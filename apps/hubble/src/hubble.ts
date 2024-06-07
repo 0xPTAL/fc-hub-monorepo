@@ -95,27 +95,7 @@ import { MerkleTrie } from "./network/sync/merkleTrie.js";
 import { DEFAULT_CATCHUP_SYNC_SNAPSHOT_MESSAGE_LIMIT } from "./defaultConfig.js";
 import { diagnosticReporter } from "./utils/diagnosticReport.js";
 import { startupCheck, StartupCheckStatus } from "./utils/startupCheck.js";
-
-import {defineChain} from 'viem';
-
-ultimateChain = defineChain({
-  id: 24959,
-  name: 'ultimate',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'TEST',
-    symbol: 'TEST',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/'],
-    },
-  },
-  blockExplorers: {
-    default: { name: 'Explorer', url: 'https://explorerl2new-ultimate-silver-narwhal-6qksqiedjv.t.conduit.xyz/' },
-  },
-});
-
+import ultimateChain from "./ultimateChain.js";
 
 export type HubSubmitSource = "gossip" | "rpc" | "eth-provider" | "l2-provider" | "sync" | "fname-registry";
 
