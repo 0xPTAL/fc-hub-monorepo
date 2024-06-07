@@ -18,7 +18,7 @@ import { err, ok, Result, ResultAsync } from "neverthrow";
 import { IdRegistry, KeyRegistry, StorageRegistry } from "./abis.js";
 import { HubInterface } from "../hubble.js";
 import { logger } from "../utils/logger.js";
-import { optimismGoerli } from "viem/chains";
+import ultimateChain from '../ultimateChain.js';
 import {
   createPublicClient,
   fallback,
@@ -166,7 +166,7 @@ export class L2EventsProvider {
     );
 
     const publicClient = createPublicClient({
-      chain: optimismGoerli,
+      chain: ultimateChain,
       transport: fallback(transports, {
         rank: rankRpcs,
       }),
@@ -814,7 +814,7 @@ export class L2EventsProvider {
     });
     const transports = urls.map((url) => http(url, { retryCount: 1, timeout: 1000 }));
     const testClient = createPublicClient({
-      chain: optimismGoerli,
+      chain: ultimateChain,
       transport: fallback(transports),
     });
 
