@@ -1,5 +1,63 @@
 # @farcaster/hubble
 
+## 1.13.5
+
+### Patch Changes
+
+- 224e75fa: fix: gossip contact info every 30 minutes instead of every minute, avoid gossiping contact info on peer connect, skip contact info updates that happen too frequently
+- c723f655: feat: Add endpoints to control sync
+- 667a5b30: feat: add experimental HTTP APIs to control sync
+- Updated dependencies [c723f655]
+  - @farcaster/hub-nodejs@0.11.19
+
+## 1.13.4
+
+### Patch Changes
+
+- 3f0fb85c: fix: remove nemes from mainnet bootstrap peers (deprecated)
+- 366ce95c: fix: Fix gossip worker spending too much time iterating peer store
+
+## 1.13.3
+
+### Patch Changes
+
+- 2d26d305: CLI tool for measuring sync health
+- b150e900: fix: Use stricter socket timeout for gossip
+- eacf29c9: fix: http endoint return not found instead of internal database error
+  - @farcaster/hub-nodejs@0.11.18
+
+## 1.13.2
+
+### Patch Changes
+
+- e58e963d: fix: Always log when updating contact info
+- 27a1cfc8: fix: updated the cli tool to flush logs before exiting
+- f25f133f: chore: Segment bundle delay stats by message status
+- dab95118: Add rpc to expose LinkCompactStateMessage + explicit handling of type
+- 6ceb8f54: add libp2p/peer-store patch to resolve corrupt peer id loads
+- Updated dependencies [dab95118]
+  - @farcaster/hub-nodejs@0.11.17
+
+## 1.13.1
+
+### Patch Changes
+
+- c424e111: feat: Add support for long casts
+- Updated dependencies [c424e111]
+  - @farcaster/hub-nodejs@0.11.16
+
+## 1.13.0
+
+### Minor Changes
+
+- feat: Release 1.13
+
+### Patch Changes
+
+- 1c2dde78: feat: All HUB_OPTIONS env var to docker compose
+- 35d395f3: [chore] Determine app version via manual JSON.parse instead of import
+  - @farcaster/hub-nodejs@0.11.15
+
 ## 1.12.3
 
 ### Patch Changes

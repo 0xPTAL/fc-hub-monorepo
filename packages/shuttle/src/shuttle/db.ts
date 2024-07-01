@@ -16,6 +16,7 @@ import {
   UpdateQueryBuilder,
 } from "kysely";
 import {
+  CastType,
   HashScheme,
   MessageType,
   ReactionType,
@@ -53,6 +54,7 @@ export type CastAddBodyJson = {
   mentions?: number[];
   mentionsPositions?: number[];
   parent?: CastIdJson | string;
+  type: CastType;
 };
 
 export type CastRemoveBodyJson = {
@@ -240,3 +242,4 @@ export function getEstimateOfTablesRowCount(db: DB, tablesToMonitor: Array<keyof
 
 export type DBTransaction = Transaction<HubTables>;
 export type DB = Kysely<HubTables>;
+export { sql } from "kysely";

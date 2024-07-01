@@ -1,5 +1,48 @@
 # @farcaster/hub-nodejs
 
+## 0.11.19
+
+### Patch Changes
+
+- c723f655: feat: Add endpoints to control sync
+
+## 0.11.18
+
+### Patch Changes
+
+- Updated dependencies [eacf29c9]
+  - @farcaster/core@0.14.17
+
+## 0.11.17
+
+### Patch Changes
+
+- dab95118: Add rpc to expose LinkCompactStateMessage + explicit handling of type
+- Updated dependencies [dab95118]
+  - @farcaster/core@0.14.16
+
+## 0.11.16
+
+### Patch Changes
+
+- c424e111: feat: Add support for long casts
+- Updated dependencies [c424e111]
+  - @farcaster/core@0.14.15
+
+## 0.11.15
+
+### Patch Changes
+
+- Updated dependencies [de52fbce]
+  - @farcaster/core@0.14.14
+
+## 0.11.14
+
+### Patch Changes
+
+- Updated dependencies [911f8b23]
+  - @farcaster/core@0.14.13
+
 ## 0.11.13
 
 ### Patch Changes

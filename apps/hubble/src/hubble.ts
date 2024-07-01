@@ -40,6 +40,7 @@ import { PruneEventsJobScheduler } from "./storage/jobs/pruneEventsJob.js";
 import { PruneMessagesJobScheduler } from "./storage/jobs/pruneMessagesJob.js";
 import { sleep } from "./utils/crypto.js";
 import { rsDbDestroy, rsValidationMethods } from "./rustfunctions.js";
+import { URL } from "node:url";
 import * as tar from "tar";
 import * as zlib from "zlib";
 import {
@@ -67,7 +68,6 @@ import StoreEventHandler from "./storage/stores/storeEventHandler.js";
 import { FNameRegistryClient, FNameRegistryEventsProvider } from "./eth/fnameRegistryEventsProvider.js";
 import { L2EventsProvider, OptimismConstants } from "./eth/l2EventsProvider.js";
 import { prettyPrintTable } from "./profile/profile.js";
-import packageJson from "./package.json" assert { type: "json" };
 import { createPublicClient, fallback, http } from "viem";
 import { mainnet, optimism } from "viem/chains";
 import { AddrInfo } from "@chainsafe/libp2p-gossipsub/types";
@@ -99,14 +99,16 @@ import ultimateChain from "./ultimateChain.js";
 
 export type HubSubmitSource = "gossip" | "rpc" | "eth-provider" | "l2-provider" | "sync" | "fname-registry";
 
-export const APP_VERSION = packageJson.version;
+export const APP_VERSION = JSON.parse(
+  fs.readFileSync(path.join(new URL(".", import.meta.url).pathname, "..", "./package.json")).toString(),
+).version;
 export const APP_NICKNAME = process.env["HUBBLE_NAME"] ?? "Farcaster Hub";
 
 export const SNAPSHOT_S3_UPLOAD_BUCKET = "farcaster-snapshots";
 export const SNAPSHOT_S3_DOWNLOAD_BUCKET = "download.farcaster.xyz";
 export const S3_REGION = "auto";
 
-export const FARCASTER_VERSION = "2024.5.1";
+export const FARCASTER_VERSION = "2024.6.12";
 export const FARCASTER_VERSIONS_SCHEDULE: VersionSchedule[] = [
   { version: "2023.3.1", expiresAt: 1682553600000 }, // expires at 4/27/23 00:00 UTC
   { version: "2023.4.19", expiresAt: 1686700800000 }, // expires at 6/14/23 00:00 UTC
@@ -119,9 +121,11 @@ export const FARCASTER_VERSIONS_SCHEDULE: VersionSchedule[] = [
   { version: "2024.2.7", expiresAt: 1712102400000 }, // expires at 4/3/24 00:00 UTC
   { version: "2024.3.20", expiresAt: 1715731200000 }, // expires at 5/15/24 00:00 UTC
   { version: "2024.5.1", expiresAt: 1719360000000 }, // expires at 6/26/24 00:00 UTC
+  { version: "2024.6.12", expiresAt: 1722988800000 }, // expires at 8/7/24 00:00 UTC
 ];
 
-const MAX_CONTACT_INFO_AGE_MS = GOSSIP_SEEN_TTL;
+const MAX_CONTACT_INFO_AGE_MS = 1000 * 60 * 60; // 60 minutes
+const CONTACT_INFO_UPDATE_THRESHOLD_MS = 1000 * 60 * 30; // 30 minutes
 
 export interface HubInterface {
   engine: Engine;
@@ -347,7 +351,6 @@ export class Hub implements HubInterface {
   private adminServer: AdminServer;
   private httpApiServer: HttpAPIServer;
 
-  private contactTimer?: NodeJS.Timer;
   private rocksDB: RocksDB;
   private syncEngine: SyncEngine;
   private allowedPeerIds: string[] | undefined;
@@ -726,9 +729,9 @@ export class Hub implements HubInterface {
       this.options.announceIp ?? undefined,
     );
     if (rpcAddressCheck.isErr()) {
-      const errorMessage = `Error validating RPC address at port ${this.options.rpcPort}. 
+      const errorMessage = `Error validating RPC address at port ${this.options.rpcPort}.
         Please make sure RPC port value is valid and reachable from public internet.
-        Reachable address is required for hub to perform diff sync via gRPC API and sync with the network. 
+        Reachable address is required for hub to perform diff sync via gRPC API and sync with the network.
         Hub operators may need to enable port-forwarding of traffic to hub's host and port if they are behind a NAT.
         `;
       log.warn(
@@ -788,7 +791,9 @@ export class Hub implements HubInterface {
     this.pruneEventsJobScheduler.start(this.options.pruneEventsJobCron);
     this.checkFarcasterVersionJobScheduler.start();
     this.validateOrRevokeMessagesJobScheduler.start();
-    this.gossipContactInfoJobScheduler.start("*/1 * * * *"); // Every minute
+
+    const randomMinute = Math.floor(Math.random() * 30);
+    this.gossipContactInfoJobScheduler.start(`${randomMinute} */30 * * * *`); // Random minute every 30 minutes
     this.checkIncomingPortsJobScheduler.start();
 
     // Mainnet only jobs
@@ -1174,7 +1179,6 @@ export class Hub implements HubInterface {
   /** Stop the GossipNode and RPC Server */
   async stop(reason: HubShutdownReason, terminateGossipWorker = true) {
     log.info("Stopping Hubble...");
-    clearInterval(this.contactTimer);
 
     // First, stop the RPC/Gossip server so we don't get any more messages
     if (!this.options.httpServerDisabled) {
@@ -1249,6 +1253,7 @@ export class Hub implements HubInterface {
       );
 
       await this.gossipNode.gossipContactInfo(contactInfo);
+      statsd().gauge("peer_store.count", await this.gossipNode.peerStoreCount());
       return Promise.resolve(ok(undefined));
     }
   }
@@ -1259,12 +1264,16 @@ export class Hub implements HubInterface {
 
   private async handleGossipMessage(gossipMessage: GossipMessage, source: PeerId, msgId: string): HubAsyncResult<void> {
     let reportedAsInvalid = false;
+    const currentTime = getFarcasterTime().unwrapOr(0);
+    const messageFirstGossipedTime = gossipMessage.timestamp ?? 0;
+    const gossipMessageDelay = currentTime - messageFirstGossipedTime;
     if (gossipMessage.timestamp) {
       // If message is older than seenTTL, we will try to merge it, but report it as invalid so it doesn't
       // propogate across the network
       const cutOffTime = getFarcasterTime().unwrapOr(0) - GOSSIP_SEEN_TTL / 1000;
 
       if (gossipMessage.timestamp < cutOffTime) {
+        statsd().timing("gossip.message_bundle_delay.invalid", gossipMessageDelay);
         await this.gossipNode.reportValid(msgId, peerIdFromString(source.toString()).toBytes(), false);
         reportedAsInvalid = true;
       }
@@ -1296,10 +1305,6 @@ export class Hub implements HubInterface {
         });
         return err(new HubError("unavailable", msg));
       }
-
-      const currentTime = getFarcasterTime().unwrapOr(0);
-      const messageFirstGossipedTime = gossipMessage.timestamp ?? 0;
-      const gossipMessageDelay = currentTime - messageFirstGossipedTime;
 
       // Merge the message
       if (gossipMessage.message) {
@@ -1351,6 +1356,7 @@ export class Hub implements HubInterface {
           if (!reportedAsInvalid) {
             await this.gossipNode.reportValid(msgId, peerIdFromString(source.toString()).toBytes(), true);
           }
+          statsd().timing("gossip.message_bundle_delay.success", gossipMessageDelay);
         } else {
           const errCode = results[0]?._unsafeUnwrapErr()?.errCode as string;
           const errMsg = results[0]?._unsafeUnwrapErr()?.message;
@@ -1376,8 +1382,8 @@ export class Hub implements HubInterface {
           if (!reportedAsInvalid) {
             await this.gossipNode.reportValid(msgId, peerIdFromString(source.toString()).toBytes(), false);
           }
+          statsd().timing("gossip.message_bundle_delay.failure", gossipMessageDelay);
         }
-        statsd().timing("gossip.message_bundle_delay", gossipMessageDelay);
 
         return ok(undefined);
       } else {
@@ -1394,8 +1400,6 @@ export class Hub implements HubInterface {
   }
 
   private async handleContactInfo(peerId: PeerId, content: ContactInfoContent): Promise<boolean> {
-    statsd().gauge("peer_store.count", await this.gossipNode.peerStoreCount());
-
     let message: ContactInfoContentBody = content.body
       ? content.body
       : ContactInfoContentBody.create({
@@ -1513,7 +1517,7 @@ export class Hub implements HubInterface {
     log.debug({ identity: this.identity, peer: peerId, message }, "received peer ContactInfo");
 
     // Check if we already have this client
-    const result = this.syncEngine.addContactInfoForPeerId(peerId, message);
+    const result = this.syncEngine.addContactInfoForPeerId(peerId, message, CONTACT_INFO_UPDATE_THRESHOLD_MS);
     if (result.isOk() && !this.performedFirstSync) {
       // Sync with the first peer so we are upto date on startup.
       this.performedFirstSync = true;
@@ -1640,11 +1644,15 @@ export class Hub implements HubInterface {
     });
 
     this.gossipNode.on("peerConnect", async () => {
+      // NB: Gossiping our own contact info is commented out, since at the time of
+      // writing this the p2p network has overwhelming number of peers and spends more
+      // time processing contact info than messages. We may uncomment in the future
+      // if peer counts drop.
       // When we connect to a new node, gossip out our contact info 1 second later.
       // The setTimeout is to ensure that we have a chance to receive the peer's info properly.
-      setTimeout(async () => {
-        await this.gossipContactInfo();
-      }, 1 * 1000);
+      // setTimeout(async () => {
+      //   await this.gossipContactInfo();
+      // }, 1 * 1000);
       statsd().increment("peer_connect.count");
     });
 
