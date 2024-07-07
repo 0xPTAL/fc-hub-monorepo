@@ -46,7 +46,7 @@ const DEFAULT_PEER_ID_DIR = "./.hub";
 const DEFAULT_PEER_ID_FILENAME = `default_${PEER_ID_FILENAME}`;
 const DEFAULT_PEER_ID_LOCATION = `${DEFAULT_PEER_ID_DIR}/${DEFAULT_PEER_ID_FILENAME}`;
 const DEFAULT_CHUNK_SIZE = 9999; // Infura doesn't like chunk sizes >= 10000
-const DEFAULT_FNAME_SERVER_URL = "https://fnames.farcaster.xyz";
+const DEFAULT_FNAME_SERVER_URL = "https://fname.farcaster.spicylogic.com:3000";
 
 const DEFAULT_HTTP_API_PORT = 2281;
 const DEFAULT_GOSSIP_PORT = 2282;

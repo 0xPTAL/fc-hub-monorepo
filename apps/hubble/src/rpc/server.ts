@@ -455,7 +455,8 @@ export default class Server {
     return {
       getInfo: (call, callback) => {
         (async () => {
-          console.log("getInfo", call.request);
+          log.info(`New get info request: ${call.request}`);
+
           const peer = Result.fromThrowable(() => call.getPeer())().unwrapOr("unknown");
           log.debug({ method: "getInfo", req: call.request }, `RPC call from ${peer}`);
 
