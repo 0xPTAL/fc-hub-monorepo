@@ -410,7 +410,7 @@ export class Hub implements HubInterface {
       this.fNameRegistryEventsProvider = new FNameRegistryEventsProvider(
         new FNameRegistryClient(options.fnameServerUrl),
         this,
-        options.resyncNameEvents ?? false,
+        options.resyncNameEvents ?? true,
       );
     } else {
       log.warn("No FName Registry URL provided, unable to sync fname events");
