@@ -69,7 +69,7 @@ import { rustErrorToHubError } from "../rustfunctions.js";
 
 const HUBEVENTS_READER_TIMEOUT = 1 * 60 * 60 * 1000; // 1 hour
 
-export const DEFAULT_SUBSCRIBE_PERIP_LIMIT = 4; // Max 4 subscriptions per IP
+export const DEFAULT_SUBSCRIBE_PERIP_LIMIT = 10; // Max 4 subscriptions per IP
 export const DEFAULT_SUBSCRIBE_GLOBAL_LIMIT = 4096; // Max 4096 subscriptions globally
 const MAX_EVENT_STREAM_SHARDS = 10;
 export const DEFAULT_SERVER_INTERNET_ADDRESS_IPV4 = "0.0.0.0";
