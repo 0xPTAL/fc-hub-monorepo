@@ -69,7 +69,8 @@ import { rustErrorToHubError } from "../rustfunctions.js";
 
 const HUBEVENTS_READER_TIMEOUT = 1 * 60 * 60 * 1000; // 1 hour
 
-export const DEFAULT_SUBSCRIBE_PERIP_LIMIT = 10; // Max 4 subscriptions per IP
+export const DEFAULT_SUBSCRIBE_PERIP_LIMIT = 100; // Max 4 subscriptions per IP
+const MAX_STREAM_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 export const DEFAULT_SUBSCRIBE_GLOBAL_LIMIT = 4096; // Max 4096 subscriptions globally
 const MAX_EVENT_STREAM_SHARDS = 10;
 export const DEFAULT_SERVER_INTERNET_ADDRESS_IPV4 = "0.0.0.0";
@@ -1371,6 +1372,24 @@ export default class Server {
             }
           }
         };
+        // Set a timeout to close the stream after MAX_STREAM_DURATION
+        const streamTimeout = setTimeout(() => {  // <-- New code added
+          log.info({ peer }, "subscribe: stream closed due to max duration");
+          stream.destroy(new Error("Stream closed after exceeding maximum duration"));
+        }, MAX_STREAM_DURATION);
+
+        // Clean up when the stream is closed
+        stream.on("close", () => {
+          clearTimeout(streamTimeout); // <-- New code added
+          this.engine?.eventHandler.off("mergeMessage", eventListener);
+          this.engine?.eventHandler.off("pruneMessage", eventListener);
+          this.engine?.eventHandler.off("revokeMessage", eventListener);
+          this.engine?.eventHandler.off("mergeUsernameProofEvent", eventListener);
+          this.engine?.eventHandler.off("mergeOnChainEvent", eventListener);
+
+          this.subscribeIpLimiter.removeConnection(peer);
+          log.info({ peer }, "subscribe: stream closed");
+        });
 
         // Register a close listener to remove all listeners before we start sending events
         stream.on("close", () => {
